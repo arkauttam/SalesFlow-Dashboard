@@ -12,6 +12,14 @@ import { useStore } from '@/store/useStore';
 
 export default function Dashboard() {
   const { user } = useStore();
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    if (hour < 21) return "Good evening";
+    return "Good night";
+  };
 
   return (
     <DashboardLayout>
@@ -20,8 +28,9 @@ export default function Dashboard() {
         <div className="flex flex-col gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold">
-              Good morning, {user?.name?.split(' ')[0]} 👋
+              {getGreeting()}, {user?.name?.split(" ")[0]} 👋
             </h1>
+
             <p className="text-sm sm:text-base text-muted-foreground">
               Here's what's happening with your store today.
             </p>
