@@ -1,7 +1,13 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { User, Order, DateRange, OrderStatusFilter, PaymentStatusFilter } from '@/types';
-import { orders as mockOrders } from '@/data/orders';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import {
+  User,
+  Order,
+  DateRange,
+  OrderStatusFilter,
+  PaymentStatusFilter,
+} from "@/types";
+import { orders as mockOrders } from "@/data/orders";
 
 interface StoreState {
   // Auth
@@ -9,20 +15,20 @@ interface StoreState {
   user: User | null;
   login: (user: User) => void;
   logout: () => void;
-  
+
   // Theme
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   toggleTheme: () => void;
-  setTheme: (theme: 'light' | 'dark') => void;
-  
+  setTheme: (theme: "light" | "dark") => void;
+
   // Sidebar
   sidebarCollapsed: boolean;
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
-  
+
   // Orders
   orders: Order[];
-  
+
   // Filters
   dateRange: DateRange;
   customDateStart: string | null;
@@ -31,7 +37,7 @@ interface StoreState {
   orderStatusFilter: OrderStatusFilter;
   paymentStatusFilter: PaymentStatusFilter;
   searchQuery: string;
-  
+
   // Filter actions
   setDateRange: (range: DateRange) => void;
   setCustomDateRange: (start: string, end: string) => void;
@@ -44,61 +50,76 @@ interface StoreState {
 
 export const useStore = create<StoreState>()(
   persist(
-    (set) => ({
-      // Auth
-      isLoggedIn: false,
-      user: null,
+    (set, get) => ({
+      isLoggedIn: true,
+      user: {
+        name: "Uttam",
+        email: "uttamghosh7215@gmail.com",
+        role: "Admin",
+      },
+
       login: (user) => set({ isLoggedIn: true, user }),
       logout: () => set({ isLoggedIn: false, user: null }),
-      
-      // Theme
-      theme: 'dark',
-      toggleTheme: () => set((state) => {
-        const newTheme = state.theme === 'light' ? 'dark' : 'light';
-        document.documentElement.classList.toggle('dark', newTheme === 'dark');
-        return { theme: newTheme };
-      }),
+
+      theme: "dark",
+      toggleTheme: () => {
+        const newTheme = get().theme === "light" ? "dark" : "light";
+        document.documentElement.classList.toggle("dark", newTheme === "dark");
+        set({ theme: newTheme });
+      },
       setTheme: (theme) => {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.documentElement.classList.toggle("dark", theme === "dark");
         set({ theme });
       },
-      
-      // Sidebar
+
       sidebarCollapsed: false,
-      toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+      toggleSidebar: () =>
+        set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
       setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-      
-      // Orders
       orders: mockOrders,
-      
-      // Filters
-      dateRange: 'last30days',
+      dateRange: "last30days",
       customDateStart: null,
       customDateEnd: null,
-      categoryFilter: 'all',
-      orderStatusFilter: 'all',
-      paymentStatusFilter: 'all',
-      searchQuery: '',
-      
-      // Filter actions
+      categoryFilter: "all",
+      orderStatusFilter: "all",
+      paymentStatusFilter: "all",
+      searchQuery: "",
+
       setDateRange: (range) => set({ dateRange: range }),
-      setCustomDateRange: (start, end) => set({ customDateStart: start, customDateEnd: end, dateRange: 'custom' }),
+      setCustomDateRange: (start, end) =>
+        set({
+          customDateStart: start,
+          customDateEnd: end,
+          dateRange: "custom",
+        }),
       setCategoryFilter: (category) => set({ categoryFilter: category }),
       setOrderStatusFilter: (status) => set({ orderStatusFilter: status }),
       setPaymentStatusFilter: (status) => set({ paymentStatusFilter: status }),
       setSearchQuery: (query) => set({ searchQuery: query }),
-      resetFilters: () => set({
-        dateRange: 'last30days',
-        customDateStart: null,
-        customDateEnd: null,
-        categoryFilter: 'all',
-        orderStatusFilter: 'all',
-        paymentStatusFilter: 'all',
-        searchQuery: '',
-      }),
+      resetFilters: () =>
+        set({
+          dateRange: "last30days",
+          customDateStart: null,
+          customDateEnd: null,
+          categoryFilter: "all",
+          orderStatusFilter: "all",
+          paymentStatusFilter: "all",
+          searchQuery: "",
+        }),
     }),
     {
-      name: 'dashboard-store',
+      name: "dashboard-store",
+
+      onRehydrateStorage: () => (state) => {
+        if (!state?.isLoggedIn) {
+          state?.login({
+            name: "Uttam",
+            email: "uttamghosh7215@gmail.com",
+            role: "Admin",
+          });
+        }
+      },
+
       partialize: (state) => ({
         isLoggedIn: state.isLoggedIn,
         user: state.user,

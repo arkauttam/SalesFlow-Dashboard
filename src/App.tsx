@@ -19,7 +19,7 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   const { theme, isLoggedIn } = useStore();
-
+  console.log("isLoggedIn:", isLoggedIn);
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
